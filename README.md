@@ -11,5 +11,7 @@ The codes found here allow these algorithm to be fed by the DarkMachines dataset
 
 # Set up
 In order to run this code in the IFIC machines, the required setup is inside the `setup.sh` bash script.
+
 `source setup.sh`
+
 This only runs the basic ATLAS and root (6.18.04) setting up.
