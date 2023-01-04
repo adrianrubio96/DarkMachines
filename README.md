@@ -14,4 +14,4 @@ In order to run this code in the IFIC machines, the required setup is inside the
 
 `source setup.sh`
 
-This only runs the basic ATLAS and root (6.18.04) setting up.
+This only runs the basic ATLAS and ROOT (6.18.04) setting up.
