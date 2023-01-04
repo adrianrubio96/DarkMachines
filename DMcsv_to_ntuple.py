@@ -15,7 +15,7 @@ from utils.variables import *
 from utils.utils import *
 
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/GenerativeModels/linked_DarkMachines_input/'
+INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/linked_DarkMachines_input/'
 
 def main():
     
@@ -38,7 +38,20 @@ def main():
         print("Reading the part %d/%d of the csv input %s " % (SPLIT_NUMBER, TOTAL_SPLIT, INPUT_CSV))
     else: 
         print("Reading the whole csv input %s" % INPUT_CSV)
+
+    # Defining writing paths and tree
+    if TOTAL_SPLIT == 0: 
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
+        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
+    else:
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/parallel_splits/'
+        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
+    treename = 'mytree'
     
+    # Create TFile
+    outfile = TFile.Open(OUTPUT_FILE, 'RECREATE')
+    # Create TTree 
+    tree = TTree(treename,'Tree for transformers')
     
     # Read csv
     #with open(INPUT_PATH+INPUT_CSV, 'r') as f:
@@ -61,7 +74,7 @@ def main():
 
     # Organise objects reading
     i = 0
-    N_objs = { i : []}
+    #N_objs = { i : []}
     objs = {}
     var = {}
      
@@ -104,7 +117,7 @@ def main():
         objects = event.split(';')[5:]
         debugPrint(debug, "objects")
         debugPrint(debug, objects)
-        objs[i]={
+        objs={
                 'j' : [],
                 'b' : [], 
                 'ep' : [],
@@ -115,7 +128,7 @@ def main():
                 'met' : []
                }
         
-        objs[i]['met'].append(met)
+        objs['met'].append(met)
         
         Nobjs = 1
         
@@ -136,68 +149,95 @@ def main():
             # Save kinematics
             debugPrint(debug, "objs[i][otype]: ")
             try:
-                objs[i][otype].append(lvec)
+                objs[otype].append(lvec)
             except:
-                objs[i][otype]=[]
-                objs[i][otype].append(lvec)
-            debugPrint(debug, objs[i][otype])
+                objs[otype]=[]
+                objs[otype].append(lvec)
+            debugPrint(debug, objs[otype])
             
             Nobjs += 1
 
             # Sort objects by Pt
-            debugPrint(debug, "sorting objs[i][otype]: ")
-            objs[i][otype] = sortByPt(objs[i][otype],debug)
-            debugPrint(debug, objs[i][otype])
+            debugPrint(debug, "sorting objs[otype]: ")
+            objs[otype] = sortByPt(objs[otype],debug)
+            debugPrint(debug, objs[otype])
             
         if debug: print('Point 1')
         # Define variables
-        N_objs[i] = Nobjs
-        var[i]={}
-        var[i]['HT'] = H_T(objs[i])
-        var[i]['MET'] = MET(objs[i])
-        var[i]['obj_px'] = px(objs[i])
-        var[i]['obj_py'] = py(objs[i])
-        var[i]['obj_pz'] = pz(objs[i])
-        var[i]['obj_Energy'] = Energy(objs[i])
-        var[i]['obj_eta'] = eta(objs[i])
-        var[i]['obj_phi'] = phi(objs[i])
-        var[i]['obj_charge'] = charge(objs[i])  
-        var[i]['isChargedObject'] = isCharged(objs[i])
-        var[i]['isNeutralObject'] = isNeutral(objs[i])
-        var[i]['isJet'] = isJet(objs[i])
-        var[i]['isBJet'] = isBJet(objs[i])
-        var[i]['isLepton'] = isLepton(objs[i])
-        var[i]['isPhoton'] = isPhoton(objs[i])
+        #N_objs = Nobjs
+        var={}
+        var['HT'] = H_T(objs)
+        var['MET'] = MET(objs)
+        var['obj_px'] = px(objs)
+        var['obj_py'] = py(objs)
+        var['obj_pz'] = pz(objs)
+        var['obj_Energy'] = Energy(objs)
+        var['obj_eta'] = eta(objs)
+        var['obj_phi'] = phi(objs)
+        var['obj_charge'] = charge(objs)  
+        var['isChargedObject'] = isCharged(objs)
+        var['isNeutralObject'] = isNeutral(objs)
+        var['isJet'] = isJet(objs)
+        var['isBJet'] = isBJet(objs)
+        var['isLepton'] = isLepton(objs)
+        var['isPhoton'] = isPhoton(objs)
         # Define label variables
         #for l in sorted(process_csv):
         #    var[i]['label_'+l] = labels(process, l)
         # Insert useful info
-        var[i]['MCweight'] = float(w)
+        var['MCweight'] = float(w)
         # Insert TLorentzVector variables
         if debug: print('Point 2')
-        for otype in sorted(objs[0]):
+        for otype in sorted(objs):
             otype = otype.replace('+','p').replace('-','m')
-            var[i]['tlv_%s' % otype] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()
-            if len(objs[i][otype])==0: var[i]['tlv_%s' % otype].push_back(ROOT.Math.PtEtaPhiEVector(0.,0.,0.,0.))
+            var['tlv_%s' % otype] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()
+            if len(objs[otype])==0: var['tlv_%s' % otype].push_back(ROOT.Math.PtEtaPhiEVector(0.,0.,0.,0.))
             else:
-                for lv in objs[i][otype]:
-                    var[i]['tlv_%s' % otype].push_back(lv)
-                
+                for lv in objs[otype]:
+                    var['tlv_%s' % otype].push_back(lv)
+
+
+        # Define branches in output tree
+        # Define branches
+        if i==0:
+            variables = {}
+            for v in sorted(var):
+                if "LorentzVector" in str(type(var[v])):
+                    variables[v] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()
+                    tree.Branch(v,variables[v])
+                elif "VecOps" in str(type(var[v])):
+                    if "int" in str(type(var[v])):
+                        variables[v] = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))()
+                        tree.Branch(v,variables[v])
+                    if "float" in str(type(var[v])):
+                        variables[v] = ROOT.std.vector(float,ROOT.Detail.VecOps.RAdoptAllocator(float))()
+                        tree.Branch(v,variables[v])
+                else:
+                    if type(var[v]) is  int :
+                        variables[v] = array('i',[0])
+                        tree.Branch(v,variables[v],str(v+"/I"))
+                    if type(var[v]) is float :
+                        variables[v] = array('f',[0.])
+                        tree.Branch(v,variables[v],str(v+"/F"))  
+            print(tree.GetListOfBranches())      
+        
+        # Writing event "i" into tree
+
         #if debug: break
+        
         i+=1 
-        #if i > 1000: break
+        if i > 1000: break
         #break
-    print("READING IS DONE!")
 
     
-    if TOTAL_SPLIT == 0: 
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/GenerativeModels/DarkMachines_ntuples/fullStats/'
-        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
-    else:
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/GenerativeModels/DarkMachines_ntuples/parallel_splits/'
-        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
-    treename = 'mytree'
-    load(var, OUTPUT_FILE, treename)
+    #if TOTAL_SPLIT == 0: 
+    #    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
+    #    OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
+    #else:
+    #    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/parallel_splits/'
+    #    OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
+    #treename = 'mytree'
+    #load(var, OUTPUT_FILE, treename)
 
 
 
