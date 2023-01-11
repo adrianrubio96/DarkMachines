@@ -16,14 +16,15 @@ import sys, os
 from utils.variables import *
 from utils.utils import *
 
-process_ntuple = {
-                 'ttbar' : 'ttbar_10fb.root',
-                 'Zjets' : 'z_jets_10fb.root',
-                 #'ttH'   : 'ttbarHiggs_10fb.root'
-                 'wtop' : 'wtop_10fb.root'
-}
+#process_csv = {
+#                 'ttbar' : 'ttbar_10fb.root',
+#                 'Zjets' : 'z_jets_10fb.root',
+#                 #'ttH'   : 'ttbarHiggs_10fb.root'
+#                 'wtop' : 'wtop_10fb.root'
+#}
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/GenerativeModels/DarkMachines_ntuples/'
+INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
+OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/'
 
 def passSelection(variables):
     # Channel 1
@@ -46,7 +47,7 @@ def main():
     process = options.process
 
     # Open TFile
-    f = TFile.Open(INPUT_PATH+process_ntuple[process], "READ")
+    f = TFile.Open(INPUT_PATH+process_csv[process].replace('.csv','.root'), "READ")
     # Read tree
     tree = f.Get("mytree")
     list_branches = [key.GetName() for key in tree.GetListOfBranches()]
@@ -83,6 +84,7 @@ def main():
         if (time.time()-start) > t:
             print("Reading during more than %s minutes..." % (t/60))
             t+=300
+        if n%100000==0: print('Event ' +str(n))
 
         tree.GetEntry(n)
         if not passSelection(variables): continue
@@ -111,14 +113,14 @@ def main():
     
                 
         i+=1
-        #if i>10000: break
+        #if i>900: break
         
     # Create folders for final ntuples: train, val, test folders
     folders = ['train','val','test']
     for folder in folders:
-        if not os.path.exists(INPUT_PATH+folder+'/'):
+        if not os.path.exists(OUTPUT_PATH+folder+'/'):
             print("Creating folder for %s samples..." % folder)
-            os.makedirs(INPUT_PATH+folder+'/')
+            os.makedirs(OUTPUT_PATH+folder+'/')
 
     # Select only variable useful for training
     var_light = {}
@@ -128,7 +130,7 @@ def main():
             if 'tlv' not in v: var_light[i][v] = var[i][v]
 
         # Define additional variables for the training
-        for l in sorted(process_ntuple):
+        for l in sorted(process_csv):
             var_light[i]['label_%s' % l] = labels(process, l)
     
     # Create 3 different trees: train, val, test
@@ -138,29 +140,48 @@ def main():
     TEST_FRAC = 10./100.
 
     # Writing acceptance info
-    acceptance_path = '/lhome/ific/a/adruji/GenerativeModels/DataPreparation/acceptance/'
+    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/'
     with open('%s/%s_acceptance.csv' % (acceptance_path,process), 'w+') as csv:
         csv.write('Process,Events,PassedEvents,Acceptance\n')
         csv.write('%s,%d,%d,%s\n' % (process,int(tree.GetEntries()),nevents,float(nevents)/float(tree.GetEntries())))
     
-    ## Divide the whole ntuple in smaller ones
-    events_per_number = 900
-    number_of_files = int(float(nevents)/float(events_per_number))
-    if number_of_files < 2: 
-        print( "THIS PROCESS HASS ONLY %d IN TOTAL. NO SEVERAL NTUPLES CAN BE CREATED FROM IT")
-        print("exiting...")
-        sys.exit()
+    ## Split each train/val/test ntuples in 2 smaller ones
+    split_number=2
+    min_events_per_file = 1000
     
+    number_of_files = int(float(nevents)/float(min_events_per_file))
+    
+    if number_of_files < 2: 
+        print( "THIS PROCESS HASS ONLY %d EVENTS IN TOTAL. NO SEVERAL NTUPLES CAN BE CREATED FROM IT" % nevents)
+        split_number=1
+
+    events_per_split = int(float(nevents)/float(split_number))
+
+    # Print relevant numbers for the split
+    print("--Print relevant numbers for the split--")
+    print('nevents=%s' % str(nevents))
+    print('split_number=%d' % split_number)
+    print('events_per_split=%d' % events_per_split)
+    print('events_per_split*TRAIN_FRAC=%d' % (int(events_per_split*TRAIN_FRAC)))
+    print('events_per_split*VAL_FRAC=%d' % (int(events_per_split*VAL_FRAC)))
+    print('events_per_split*TEST_FRAC=%d' % (int(events_per_split*TEST_FRAC)))
+
     treename = 'tree'
-    for n in range(2):
-        start_event = n*events_per_number
-        var_train = dict((k, var_light[start_event+k]) for k in range(0,int(events_per_number*TRAIN_FRAC)))
-        var_val = dict((k, var_light[start_event+k+int(events_per_number*TRAIN_FRAC)]) for k in range(0,int(events_per_number*VAL_FRAC)))
-        var_test = dict((k, var_light[start_event+k+int(events_per_number*TRAIN_FRAC)+int(events_per_number*VAL_FRAC)]) for k in range(0,int(events_per_number*TEST_FRAC)))
+    for n in range(split_number):   
+        start_event = n*events_per_split
+        # Monitoring numbers
+        print('split %d' % n)
+        print('start_event=%d' %start_event)     
+
+        # Filling dictionaries
+        var_train = dict((k, var_light[start_event+k]) for k in range(0,int(events_per_split*TRAIN_FRAC)))
+        var_val = dict((k, var_light[start_event+k+int(events_per_split*TRAIN_FRAC)]) for k in range(0,int(events_per_split*VAL_FRAC)))
+        var_test = dict((k, var_light[start_event+k+int(events_per_split*TRAIN_FRAC)+int(events_per_split*VAL_FRAC)]) for k in range(0,int(events_per_split*TEST_FRAC)))
+
         # Create ntuple with n label
-        load(var_train,INPUT_PATH+'train/'+process_ntuple[process].replace('.root','_%s.root' % str(n)),treename)
-        load(var_val,INPUT_PATH+'val/'+process_ntuple[process].replace('.root','_%s.root' % str(n)),treename)
-        load(var_test,INPUT_PATH+'test/'+process_ntuple[process].replace('.root','_%s.root' % str(n)),treename)
+        load(var_train,OUTPUT_PATH+'train/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
+        load(var_val,OUTPUT_PATH+'val/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
+        load(var_test,OUTPUT_PATH+'test/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
 
     
     

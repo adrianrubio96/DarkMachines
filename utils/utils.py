@@ -10,8 +10,28 @@ import numpy as np
 from array import array
 
 process_csv = {
+                 ### Signal
+                 ## SUSY
+                 'stop_susy_01' : 'stop_01_10fb.csv',
+                 'stop_susy_02' : 'stop_02_10fb.csv',
+                 'stop_susy_03' : 'stop_03_10fb.csv',
+                 'stop_susy_04' : 'stop_04_10fb.csv',
+                 'Zp_susy_01' : 'Zp_technicol_01_10fb.csv',
+                 'Zp_susy_02' : 'Zp_technicol_02_10fb.csv',
+                 'Zp_susy_03' : 'Zp_technicol_03_10fb.csv',
+                 'Zp_susy_04' : 'Zp_technicol_04_10fb.csv',
+                 'Zp_susy_05' : 'Zp_technicol_05_10fb.csv',
+                 'gluino_01' : 'gluino_01_10fb.csv',
+                 'gluino_02' : 'gluino_02_10fb.csv',
+                 'gluino_03' : 'gluino_03_10fb.csv',
+                 'gluino_04' : 'gluino_04_10fb.csv',
+                 'gluino_05' : 'gluino_05_10fb.csv',
+                 'gluino_06' : 'gluino_06_10fb.csv',
+                 'gluino_07' : 'gluino_07_10fb.csv',
+
+                 ### Background
                  ## tt+X
-                 #'ttbar' : 'ttbar_10fb.csv',
+                 'ttbar' : 'ttbar_10fb.csv',
                  'ttH'   : 'ttbarHiggs_10fb.csv',
                  'ttW' : 'ttbarW_10fb.csv',
                  'ttZ' : 'ttbarZ_10fb.csv',
@@ -44,11 +64,12 @@ process_csv = {
                  'Wjets_12' : 'w_jets_10fb_12.csv',
                  'Wjets_13' : 'w_jets_10fb_13.csv',
                  'Wjets_14' : 'w_jets_10fb_14.csv',
+                 'Wjets_15' : 'w_jets_10fb_15.csv',
 
                  ## single-top
                  'singletop' : 'single_top_10fb.csv',
                  'singletopbar' : 'single_topbar_10fb.csv',
-                 #'wtop' : 'wtop_10fb.csv',
+                 'wtop' : 'wtop_10fb.csv',
                  'wtopbar' : 'wtopbar_10fb.csv',
                  'ztop' : 'ztop_10fb.csv',
                  'ztopbar' : 'ztopbar_10fb.csv',
@@ -82,6 +103,7 @@ process_csv = {
                  'gamjets_10' : 'gam_jets_10fb_10.csv',
                  'gamjets_11' : 'gam_jets_10fb_11.csv',
 
+                 'multijets_00' : 'njets_10fb_00.csv',
                  'multijets_01' : 'njets_10fb_01.csv',
                  'multijets_02' : 'njets_10fb_02.csv',
                  'multijets_03' : 'njets_10fb_03.csv',
@@ -109,11 +131,7 @@ process_csv = {
                  'multijets_25' : 'njets_10fb_25.csv',
                  'multijets_26' : 'njets_10fb_26.csv',
                  'multijets_27' : 'njets_10fb_27.csv',
-                 'multijets_28' : 'njets_10fb_28.csv',
-                 'multijets_29' : 'njets_10fb_29.csv',
-                 'multijets_30' : 'njets_10fb_30.csv',
-                 'multijets_31' : 'njets_10fb_31.csv',
-                 'multijets_32' : 'njets_10fb_32.csv'
+                 'multijets_28' : 'njets_10fb_28.csv'
 
 }
 

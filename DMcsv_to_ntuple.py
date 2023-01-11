@@ -199,7 +199,6 @@ def main():
     
     
             # Define branches in output tree
-            # Define branches
             if i==0:
                 print("Defining tree branches...")
                 variables = {}
