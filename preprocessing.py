@@ -114,13 +114,6 @@ def main():
                 
         i+=1
         #if i>900: break
-        
-    # Create folders for final ntuples: train, val, test folders
-    folders = ['train','val','test']
-    for folder in folders:
-        if not os.path.exists(OUTPUT_PATH+folder+'/'):
-            print("Creating folder for %s samples..." % folder)
-            os.makedirs(OUTPUT_PATH+folder+'/')
 
     # Select only variable useful for training
     var_light = {}
@@ -130,25 +123,49 @@ def main():
             if 'tlv' not in v: var_light[i][v] = var[i][v]
 
         # Define additional variables for the training
-        for l in sorted(process_csv):
-            var_light[i]['label_%s' % l] = labels(process, l)
-    
-    # Create 3 different trees: train, val, test
-    nevents = len(var_light)
-    TRAIN_FRAC = 80./100.
-    VAL_FRAC = 10./100.
-    TEST_FRAC = 10./100.
+        ## Labeling each process
+        #for l in sorted(process_csv):
+        #    if l[-1].isdigit(): continue
+        #    var_light[i]['label_%s' % l] = labels(process, l)
+        ## Labeling signal and bkg
+        if ('susy' in process) or ('gluino' in process):
+            var_light[i]['label_background'] = int(0)
+            var_light[i]['label_signal'] = int(1)
+        else:
+            var_light[i]['label_background'] = int(1)
+            var_light[i]['label_signal'] = int(0)
 
     # Writing acceptance info
+    nevents = len(var_light)
     acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/'
     with open('%s/%s_acceptance.csv' % (acceptance_path,process), 'w+') as csv:
         csv.write('Process,Events,PassedEvents,Acceptance\n')
         csv.write('%s,%d,%d,%s\n' % (process,int(tree.GetEntries()),nevents,float(nevents)/float(tree.GetEntries())))
+
+    # Create fullStats folder if it does not exist
+    if not os.path.exists(OUTPUT_PATH+'fullStats/'):
+        print("Creating folder for fullStats ...")
+        os.makedirs(OUTPUT_PATH+'fullStats/')
+
+    # Write tree with full statistics
+    treename = 'tree'
+    load(var_light,OUTPUT_PATH+'fullStats/'+process_csv[process].replace('.csv','.root'),treename)
+
+    # Create folders for final ntuples: train, val, test folders
+    folders = ['train','val','test']
+    for folder in folders:
+        if not os.path.exists(OUTPUT_PATH+folder+'/'):
+            print("Creating folder for %s samples..." % folder)
+            os.makedirs(OUTPUT_PATH+folder+'/')
+    
+    # Create 3 different trees: train, val, test
+    TRAIN_FRAC = 80./100.
+    VAL_FRAC = 10./100.
+    TEST_FRAC = 10./100.
     
     ## Split each train/val/test ntuples in 2 smaller ones
     split_number=2
-    min_events_per_file = 1000
-    
+    min_events_per_file = 10
     number_of_files = int(float(nevents)/float(min_events_per_file))
     
     if number_of_files < 2: 
@@ -166,7 +183,6 @@ def main():
     print('events_per_split*VAL_FRAC=%d' % (int(events_per_split*VAL_FRAC)))
     print('events_per_split*TEST_FRAC=%d' % (int(events_per_split*TEST_FRAC)))
 
-    treename = 'tree'
     for n in range(split_number):   
         start_event = n*events_per_split
         # Monitoring numbers

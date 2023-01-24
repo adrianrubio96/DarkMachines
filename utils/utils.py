@@ -12,15 +12,18 @@ from array import array
 process_csv = {
                  ### Signal
                  ## SUSY
+                 'stop_susy' : 'stop_10fb.csv',
                  'stop_susy_01' : 'stop_01_10fb.csv',
                  'stop_susy_02' : 'stop_02_10fb.csv',
                  'stop_susy_03' : 'stop_03_10fb.csv',
                  'stop_susy_04' : 'stop_04_10fb.csv',
+                 'Zp_susy' : 'Zp_technicol_10fb.csv',
                  'Zp_susy_01' : 'Zp_technicol_01_10fb.csv',
                  'Zp_susy_02' : 'Zp_technicol_02_10fb.csv',
                  'Zp_susy_03' : 'Zp_technicol_03_10fb.csv',
                  'Zp_susy_04' : 'Zp_technicol_04_10fb.csv',
                  'Zp_susy_05' : 'Zp_technicol_05_10fb.csv',
+                 'gluino' : 'gluino_10fb.csv',
                  'gluino_01' : 'gluino_01_10fb.csv',
                  'gluino_02' : 'gluino_02_10fb.csv',
                  'gluino_03' : 'gluino_03_10fb.csv',
