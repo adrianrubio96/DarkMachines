@@ -10,8 +10,8 @@ import sys, os
 from utils.variables import *
 from utils.utils import *
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/'
-OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/check/signal_vs_bkg/'
+INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/v02/'
+OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/v02/signal_vs_bkg/'
 
 
 def main(): 
@@ -38,7 +38,7 @@ def main():
                 print("For ntuple %s, TTree does not exist" % ntuple)
                 continue
 
-            if 'Zp' in ntuple or 'gluino' in ntuple: continue
+            #pif 'Zp' in ntuple or 'gluino' in ntuple: continue
         
             # Access to its TTree 
             t = f.Get("tree")
