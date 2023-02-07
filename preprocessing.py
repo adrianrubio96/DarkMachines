@@ -20,6 +20,8 @@ from utils.utils import *
 INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
 OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/check/'
 
+version = 'vXX'
+
 def passSelection(variables):
     # Channel 1
     if variables['HT'][0]<600.: return False
@@ -147,8 +149,8 @@ def main():
 
     # Writing acceptance info
     nevents = len(var_light)
-    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/check/'
-    with open('%s/%s_acceptance.csv' % (acceptance_path,process), 'w+') as csv:
+    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/csv/'
+    with open('%s/%s/%s_acceptance.csv' % (acceptance_path, version, process), 'w+') as csv:
         csv.write('Process,Events,PassedEvents,Acceptance\n')
         csv.write('%s,%d,%d,%s\n' % (process,int(tree.GetEntries()),nevents,float(nevents)/float(tree.GetEntries())))
 
