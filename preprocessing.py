@@ -16,15 +16,9 @@ import sys, os
 from utils.variables import *
 from utils.utils import *
 
-#process_csv = {
-#                 'ttbar' : 'ttbar_10fb.root',
-#                 'Zjets' : 'z_jets_10fb.root',
-#                 #'ttH'   : 'ttbarHiggs_10fb.root'
-#                 'wtop' : 'wtop_10fb.root'
-#}
 
 INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
-OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/'
+OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/check/'
 
 def passSelection(variables):
     # Channel 1
@@ -32,8 +26,14 @@ def passSelection(variables):
     if variables['MET'][0]<200.: return False
     if variables['MET'][0]/variables['HT'][0]<0.2: return False
     #print(variables['tlv_j'].at(0))
-    if (len(variables['tlv_j'])+len(variables['tlv_b']))<4: return False
+    # Checking if the leading jet or bjet have pT>200GeV
     if variables['tlv_j'].at(0).Pt()<200. and variables['tlv_b'].at(0).Pt()<200.: return False
+    # Count jets with Pt>50GeV
+    #Njets = sum([1 for value in variables['isJet'] if value==1])
+    Njets = sum([1 for j in variables['tlv_j'] if j.Pt()>50.])
+    Njets += sum([1 for b in variables['tlv_b'] if b.Pt()>50.])
+    print('Njets: ',Njets)
+    if Njets<4: return False
     return True
 
 def main():
@@ -53,23 +53,23 @@ def main():
     list_branches = [key.GetName() for key in tree.GetListOfBranches()]
     variables = {}
     for v in sorted(list_branches):
-
+        vartype_ = tree.GetBranch(v).GetListOfLeaves().At(0).GetTypeName()
         if 'tlv' in v:
             variables[v] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()
             tree.SetBranchAddress(v, variables[v])
         else:
-            if "VecOps" in vartype[v]:
-                if "int" in str(vartype[v]):
+            if "VecOps" in vartype_:
+                if "int" in str(vartype_):
                     variables[v] = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))()
                     tree.SetBranchAddress(v,variables[v])
-                if "float" in str(vartype[v]):
+                elif "float" in str(vartype_):
                     variables[v] = ROOT.std.vector(float,ROOT.Detail.VecOps.RAdoptAllocator(float))()
                     tree.SetBranchAddress(v,variables[v])
             else:
-                if vartype[v]=='int':
+                if 'int' in vartype_:
                     variables[v] = array('i',[0])
                     tree.SetBranchAddress(v,variables[v])
-                if vartype[v]=='float':
+                elif 'float' in vartype_ or 'Float' in vartype_:
                     variables[v] = array('f',[0.])
                     tree.SetBranchAddress(v,variables[v])
     
@@ -88,22 +88,32 @@ def main():
 
         tree.GetEntry(n)
         if not passSelection(variables): continue
+
+        #### Check length of variables
+        #if i==1:
+        #    print('total length', len(variables['tlv_j'])+len(variables['tlv_b']))
+        #    print('length j', len(variables['tlv_j']))
+        #    print('length b', len(variables['tlv_b']))
+        #    print('entry 0 for jets', variables['tlv_j'].at(0).Pt())
+        #    print('entry 0 for bjets', variables['tlv_b'].at(0).Pt())
+        #    sys.exit()
+
         var[i]={}
         for v in sorted(list_branches):
-            
+            vartype_ = tree.GetBranch(v).GetListOfLeaves().At(0).GetTypeName()
             if 'tlv' in v:
                 var[i][v] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()
             else:
-                if "VecOps" in vartype[v]:
-                    if "int" in str(vartype[v]):
+                if "VecOps" in vartype_:
+                    if "int" in str(vartype_):
                         var[i][v] = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))()
-                    if "float" in str(vartype[v]):
+                    elif "float" in str(vartype_):
                         var[i][v] = ROOT.std.vector(float,ROOT.Detail.VecOps.RAdoptAllocator(float))()
                     for x in variables[v]: var[i][v].push_back(x)
                 else:
-                    if vartype[v]=='int':
+                    if 'int' in vartype_:
                         var[i][v] = array('i',[0])
-                    if vartype[v]=='float':
+                    elif 'float' in vartype_ or 'Float' in vartype_:
                         var[i][v] = array('f',[0.])
 
                     var[i][v] = variables[v][0]
@@ -137,7 +147,7 @@ def main():
 
     # Writing acceptance info
     nevents = len(var_light)
-    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/'
+    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/check/'
     with open('%s/%s_acceptance.csv' % (acceptance_path,process), 'w+') as csv:
         csv.write('Process,Events,PassedEvents,Acceptance\n')
         csv.write('%s,%d,%d,%s\n' % (process,int(tree.GetEntries()),nevents,float(nevents)/float(tree.GetEntries())))
