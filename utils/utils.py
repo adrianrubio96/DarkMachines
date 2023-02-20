@@ -203,20 +203,13 @@ def load(var, OUTPUT_FILE, treename):
         if (time.time()-start) > t:
             print("Writing during more than %s minutes..." % (t/60))
             t+=300
+        # Fill branches
         for v in sorted(var[0]):
-            if "vector" in str(type(var[n][v])) :
+            if "vector" in str(type(var[n][v])):
                 variables[v].clear()
                 for x in var[n][v]: variables[v].push_back(x)
             else :
-                #print(v)
-                #try:
-                variables[v][0]=var[n][v]
-                #print(v)
-                #print(var[n][v])
-                #print(variables[v][0])
-                #except:
-                #    variables[v][0]=var[n][v]
-                
+                variables[v][0]=var[n][v]     
 
         tree.Fill()
 

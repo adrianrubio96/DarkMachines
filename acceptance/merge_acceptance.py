@@ -5,11 +5,14 @@ import pandas as pd
 import glob
 
 INPUT_PATH = "/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/csv/"
-version = "v02"
+version = "v10"
 
 # Create a list of all the csv files in the current directory 
 csv_list = glob.glob('%s/%s/*.csv' % (INPUT_PATH, version)) 
-print(csv_list)
+
+# Remove the items in the list that contains 2 digits in the name
+csv_list = [item for item in csv_list if not sum(c.isdigit() for c in item.split('/')[-1])==2]
+#print(csv_list)
 
 # Create an empty dataframe to store all the data 
 df = pd.DataFrame() 
@@ -31,9 +34,3 @@ latex_table = df.to_latex()
  # Write the latex table to a text file  
 with open('tables/acceptance_%s.tex' % version, 'w') as f: 
     f.write(latex_table)
-
-
-# 
-
-
-

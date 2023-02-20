@@ -10,8 +10,8 @@ import sys, os
 from utils.variables import *
 from utils.utils import *
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/v02/'
-OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/v02/signal_vs_bkg/'
+INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/'
+OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/signal_vs_bkg/'
 
 
 def main(): 
@@ -29,6 +29,11 @@ def main():
 
         # Loop over all root files in INPUT_PATH 
         for ntuple in os.listdir(os.path.join(INPUT_PATH, dataset)):
+
+            # Skip ntuples corresponding to parallelisation of processes
+            if sum(c.isdigit() for c in ntuple)==5: # 5 digits in the name: _10fb_XX_Y.root where XX indicates the parallelisation
+                print('Skipping ntuple %s' % ntuple)
+                continue
     
             # Open the root file 
             f = ROOT.TFile(os.path.join(INPUT_PATH, dataset, ntuple))
@@ -38,7 +43,7 @@ def main():
                 print("For ntuple %s, TTree does not exist" % ntuple)
                 continue
 
-            #pif 'Zp' in ntuple or 'gluino' in ntuple: continue
+            #if 'Zp' in ntuple or 'gluino' in ntuple: continue
         
             # Access to its TTree 
             t = f.Get("tree")

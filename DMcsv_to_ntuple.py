@@ -16,6 +16,7 @@ from utils.utils import *
 
 
 INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/linked_DarkMachines_input/'
+version = 'v1'
 
 def main():
     
@@ -41,10 +42,10 @@ def main():
 
     # Defining writing paths and tree
     if TOTAL_SPLIT == 0: 
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/fullStats/' % version
         OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
     else:
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/parallel_splits/'
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/parallel_splits/' % version
         OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
     treename = 'mytree'
     
@@ -181,6 +182,7 @@ def main():
             var['isJet'] = isJet(objs)
             var['isBJet'] = isBJet(objs)
             var['isLepton'] = isLepton(objs)
+            var['isMET'] = isMET(objs)
             var['isPhoton'] = isPhoton(objs)
             # Define label variables
             #for l in sorted(process_csv):

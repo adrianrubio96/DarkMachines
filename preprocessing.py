@@ -17,10 +17,7 @@ from utils.variables import *
 from utils.utils import *
 
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
-OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/channel1/check/'
-
-version = 'vXX'
+version = 'v10'
 
 def passSelection(variables):
     # Channel 1
@@ -34,7 +31,7 @@ def passSelection(variables):
     #Njets = sum([1 for value in variables['isJet'] if value==1])
     Njets = sum([1 for j in variables['tlv_j'] if j.Pt()>50.])
     Njets += sum([1 for b in variables['tlv_b'] if b.Pt()>50.])
-    print('Njets: ',Njets)
+    #print('Njets: ',Njets)
     if Njets<4: return False
     return True
 
@@ -47,6 +44,10 @@ def main():
     (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
     
     process = options.process
+
+    # Define input and output paths
+    INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/fullStats/'
+    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/%s/' % version
 
     # Open TFile
     f = TFile.Open(INPUT_PATH+process_csv[process].replace('.csv','.root'), "READ")
@@ -91,15 +92,6 @@ def main():
         tree.GetEntry(n)
         if not passSelection(variables): continue
 
-        #### Check length of variables
-        #if i==1:
-        #    print('total length', len(variables['tlv_j'])+len(variables['tlv_b']))
-        #    print('length j', len(variables['tlv_j']))
-        #    print('length b', len(variables['tlv_b']))
-        #    print('entry 0 for jets', variables['tlv_j'].at(0).Pt())
-        #    print('entry 0 for bjets', variables['tlv_b'].at(0).Pt())
-        #    sys.exit()
-
         var[i]={}
         for v in sorted(list_branches):
             vartype_ = tree.GetBranch(v).GetListOfLeaves().At(0).GetTypeName()
@@ -119,10 +111,6 @@ def main():
                         var[i][v] = array('f',[0.])
 
                     var[i][v] = variables[v][0]
-                    #print(v)
-                    #print(variables[v][0])
-                    #print(var[i][v])
-    
                 
         i+=1
         #if i>900: break
@@ -147,9 +135,14 @@ def main():
             var_light[i]['label_background'] = int(1)
             var_light[i]['label_signal'] = int(0)
 
+    # Create acceptance folder if it does not exist
+    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/csv/'
+    if not os.path.exists(acceptance_path+version):
+        print("Creating folder for acceptance ...")
+        os.makedirs(acceptance_path+version)
+
     # Writing acceptance info
     nevents = len(var_light)
-    acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/csv/'
     with open('%s/%s/%s_acceptance.csv' % (acceptance_path, version, process), 'w+') as csv:
         csv.write('Process,Events,PassedEvents,Acceptance\n')
         csv.write('%s,%d,%d,%s\n' % (process,int(tree.GetEntries()),nevents,float(nevents)/float(tree.GetEntries())))

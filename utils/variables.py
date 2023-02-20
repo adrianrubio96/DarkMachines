@@ -21,6 +21,7 @@ vartype = {
     'isJet' : 'vector<int,ROOT::Detail::VecOps::RAdoptAllocator<int> >*',
     'isBJet' : 'vector<int,ROOT::Detail::VecOps::RAdoptAllocator<int> >*',
     'isLepton' : 'vector<int,ROOT::Detail::VecOps::RAdoptAllocator<int> >*',
+    'isMET' : 'vector<int,ROOT::Detail::VecOps::RAdoptAllocator<int> >*',
     'isPhoton' : 'vector<int,ROOT::Detail::VecOps::RAdoptAllocator<int> >*',
     'obj_Energy' : 'vector<float,ROOT::Detail::VecOps::RAdoptAllocator<float> >*',
     'obj_px' : 'vector<float,ROOT::Detail::VecOps::RAdoptAllocator<float> >*',
@@ -87,7 +88,15 @@ def isLepton(objs):
     l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
     for otype in sorted(objs):
         for obj in objs[otype]:
-            if otype.startswith('e') or otype.startswith('m'): l.push_back(int(1))
+            if len(otype)==2 and (otype.startswith('e') or otype.startswith('m')): l.push_back(int(1))
+            else: l.push_back(int(0))
+    return l
+
+def isMET(objs):
+    l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
+    for otype in sorted(objs):
+        for obj in objs[otype]:
+            if otype=='met': l.push_back(int(1))
             else: l.push_back(int(0))
     return l
 
