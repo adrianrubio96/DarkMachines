@@ -10,11 +10,27 @@ import sys, os
 from utils.variables import *
 from utils.utils import *
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/'
-OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/signal_vs_bkg/'
+#INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/'
+#OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/v10/signal_vs_bkg/'
 
 
 def main(): 
+
+    # Parse the input arguments
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option("-i","--input", dest="input", default="", help="Input path")
+
+    # Read the input arguments
+    (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
+    if options.input != "": INPUT_PATH = options.input
+
+    # Define output path
+    OUTPUT_PATH = INPUT_PATH+'signal_vs_bkg'
+
+    # Create output directory
+    if not os.path.exists(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
     
     # Loop over train/val/test subdirs
     for dataset in ['train','val','test']:

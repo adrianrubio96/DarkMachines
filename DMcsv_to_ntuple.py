@@ -15,16 +15,21 @@ from utils.variables import *
 from utils.utils import *
 
 
-INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/linked_DarkMachines_input/'
-version = 'v1'
-
 def main():
     
     # Define parser arguments
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option("-p","--process", dest="process", help="Comma-separated list of the processes to run")
+    parser.add_option("-v","--version", dest="version", default="", help="Version of the ntuples")
+    parser.add_option("-i","--input", dest="input", default="", help="Input path")
     (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
+
+    # Reading parser info: version
+    if options.version != "":
+        version = options.version
+    if options.input != "":
+        INPUT_PATH = options.input
     
     # Reading parser info: splitting large csv inputs
     ## Format: -p PROCESS:TOTAL_SPLIT:SPLIT_NUMBER

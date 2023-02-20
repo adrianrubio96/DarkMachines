@@ -17,8 +17,6 @@ from utils.variables import *
 from utils.utils import *
 
 
-version = 'v10'
-
 def passSelection(variables):
     # Channel 1
     if variables['HT'][0]<600.: return False
@@ -41,13 +39,20 @@ def main():
     parser = OptionParser()
     parser.add_option("-p","--process", dest="process", help="Comma-separated list of the processes to run")
     parser.add_option("-l","--labels", dest="labels", default="", help="Comma-separated list of the processes to associate a label")
+    parser.add_option("-v","--version", dest="version", default="", help="Version of the ntuples")
+    parser.add_option("-i","--input", dest="input", default="", help="Input path")
     (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
     
     process = options.process
 
-    # Define input and output paths
-    INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/fullStats/'
-    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/%s/' % version
+    # Reading parser info
+    if options.version != "": version = options.version
+    if options.input != "": INPUT_PATH = options.input
+
+    # Define output paths
+    #INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/fullStats/'
+    #OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/%s/' % version
+    OUPUT_PATH = INPUT_PATH.replace('fullStats','channel1/%s/' % version)
 
     # Open TFile
     f = TFile.Open(INPUT_PATH+process_csv[process].replace('.csv','.root'), "READ")
