@@ -128,8 +128,8 @@ def charge(objs):
     l = ROOT.std.vector(float,ROOT.Detail.VecOps.RAdoptAllocator(float))() #ROOT.std.vector(float)()
     for otype in sorted(objs):
         for obj in objs[otype]:
-            if '+' in otype: l.push_back(1.)
-            elif '-' in otype: l.push_back(-1.)
+            if otype=='ep' or otype=='mp': l.push_back(1.)
+            elif otype=='em' or otype=='mm': l.push_back(-1.)
             else: l.push_back(0.)
     return l
 

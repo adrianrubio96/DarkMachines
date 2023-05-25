@@ -217,3 +217,72 @@ def load(var, OUTPUT_FILE, treename):
     tree.Write()
     outfile.Write()
     outfile.Close()
+
+def load_numpy(var, OUTPUT_FILE, is_signal):
+    max_obj_per_event = 18
+    length = max_obj_per_event+2+4*max_obj_per_event # 18 for labels + 2 for MET + 4 variables per object
+    
+    #Define X_array
+    X_arr = np.zeros((len(var),length)) 
+
+    # Define Y_array for labels
+    #if is_signal: Y_arr = np.ones((len(var),1))
+    #else: Y_arr = np.zeros((len(var),1))
+
+    # Start monitoring time
+    start = time.time()
+    t=0
+    
+    # Iterate over events and store variables in X_array
+    for n in range(0,len(var)):
+
+        # Set monitoring time
+        if (time.time()-start) > t:
+            print("Writing during more than %s minutes..." % (t/60))
+            t+=300
+        
+        # Number of objects in event including MET
+        num_objs = len(var[n]['obj_Energy'])
+
+        # Iterate over objects in event
+        for pos in range(length): 
+            # First 18 positions are for object multiplicities
+            if pos < max_obj_per_event: 
+                # Count jets (not being b-jets)
+                if pos==0: X_arr[n][pos] = np.sum([1 for i, x in enumerate(var[n]['isJet']) if x==1 and var[n]['isBJet'][i]==0])
+                # Count b-jets
+                elif pos==1: X_arr[n][pos] = np.count_nonzero(var[n]['isBJet'])
+                # Count leptons
+                elif pos==2: X_arr[n][pos] = np.count_nonzero(var[n]['isLepton'])
+                # Count photons
+                elif pos==4: X_arr[n][pos] = np.count_nonzero(var[n]['isPhoton'])
+            
+            # Next 2 positions are for MET
+            elif pos >= max_obj_per_event and pos < (max_obj_per_event+2):
+                # Get MET position
+                METpos = [i for i, x in enumerate(var[n]['isMET']) if x==1][0]
+                # MET is not labeled as an object. MET info stored in positions 18-19.
+                if pos==max_obj_per_event: X_arr[n][pos] = var[n]['obj_Energy'][METpos]
+                elif pos==(max_obj_per_event+1): X_arr[n][pos] = var[n]['obj_phi'][METpos]
+
+            # Next positions are for four-momentum of objects
+            if pos >= (max_obj_per_event+2) and pos < (max_obj_per_event+2+4*num_objs):
+                i = (pos-(max_obj_per_event+2))/4 # Position of object in event
+                j = (pos-20)%4 # Position of variable in object
+                if i == METpos: continue # MET info stored in positions 18-19.
+                if i > METpos: pos_corr = pos-4 # Correct position
+                else: pos_corr = pos 
+                if j==0: X_arr[n][pos_corr] = np.log(var[n]['obj_Energy'][i])
+                if j==1: 
+                    # Compute Pt from Px and Py
+                    X_arr[n][pos_corr] = np.log(np.sqrt(var[n]['obj_px'][i]*var[n]['obj_px'][i] + var[n]['obj_py'][i]*var[n]['obj_py'][i]))
+                if j==2: X_arr[n][pos_corr] = var[n]['obj_eta'][i]
+                if j==3: X_arr[n][pos_corr] = var[n]['obj_phi'][i]
+
+    # Save X_array
+    np.save(OUTPUT_FILE, X_arr)
+
+    # Save Y_array
+    #np.save(OUTPUT_FILE.replace(".npy","_labels.npy"), Y_arr)
+
+

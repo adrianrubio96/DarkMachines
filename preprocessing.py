@@ -52,7 +52,8 @@ def main():
     # Define output paths
     #INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/fullStats/'
     #OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/%s/' % version
-    OUPUT_PATH = INPUT_PATH.replace('fullStats','channel1/%s/' % version)
+    OUTPUT_PATH = INPUT_PATH.replace('fullStats','channel1/%s/' % version)
+    print('Output path: ',OUTPUT_PATH)
 
     # Open TFile
     f = TFile.Open(INPUT_PATH+process_csv[process].replace('.csv','.root'), "READ")
@@ -159,7 +160,7 @@ def main():
 
     # Write tree with full statistics
     treename = 'tree'
-    load(var_light,OUTPUT_PATH+'fullStats/'+process_csv[process].replace('.csv','.root'),treename)
+    #load(var_light,OUTPUT_PATH+'fullStats/'+process_csv[process].replace('.csv','.root'),treename)
 
     # Create folders for final ntuples: train, val, test folders
     folders = ['train','val','test']
@@ -205,12 +206,41 @@ def main():
         var_test = dict((k, var_light[start_event+k+int(events_per_split*TRAIN_FRAC)+int(events_per_split*VAL_FRAC)]) for k in range(0,int(events_per_split*TEST_FRAC)))
 
         # Create ntuple with n label
-        load(var_train,OUTPUT_PATH+'train/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
-        load(var_val,OUTPUT_PATH+'val/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
-        load(var_test,OUTPUT_PATH+'test/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
+        #load(var_train,OUTPUT_PATH+'train/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
+        #load(var_val,OUTPUT_PATH+'val/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
+        #load(var_test,OUTPUT_PATH+'test/'+process_csv[process].replace('.csv','_%s.root' % str(n)),treename)
 
-    
-    
+    # Save numpy arrays useful for unsupervised training
+
+    # Create folders for numpy arrays
+    OUTPUT_PATH_arrays = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/v1/channel1/%s/' % version
+    folders = ['','fullStats','train','val','test']
+    for folder in folders:
+        if not os.path.exists(OUTPUT_PATH_arrays+folder+'/'):
+            print("Creating folder for %s samples..." % folder)
+            os.makedirs(OUTPUT_PATH_arrays+folder+'/')
+
+    # Create numpy arrays 
+    ## For signal
+    if ('susy' in process) or ('gluino' in process):
+        # Full stats
+        load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
+        # Only test for signal
+        load_numpy(var_light,OUTPUT_PATH_arrays+'test/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
+    ## For background, create train, val, test arrays
+    else:
+        # Full stats
+        load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
+        
+        # Spliting in train, val, test
+        var_train = dict((k, var_light[k]) for k in range(0,int(nevents*TRAIN_FRAC)))
+        var_val = dict((k, var_light[k+int(nevents*TRAIN_FRAC)]) for k in range(0,int(nevents*VAL_FRAC)))
+        var_test = dict((k, var_light[k+int(nevents*TRAIN_FRAC)+int(nevents*VAL_FRAC)]) for k in range(0,int(nevents*TEST_FRAC)))
+
+        load_numpy(var_train,OUTPUT_PATH_arrays+'train/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
+        load_numpy(var_val,OUTPUT_PATH_arrays+'val/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
+        load_numpy(var_test,OUTPUT_PATH_arrays+'test/'+process_csv[process].replace('.csv','.npy'),  is_signal=False)
+
 
 if __name__ == '__main__':
     start_time = time.time()
