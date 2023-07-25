@@ -10,6 +10,8 @@ import numpy as np
 from array import array
 
 process_csv = {
+
+                 ########### v1 of DarkMachines dataset ###############
                  ### Signal
                  ## SUSY
                  'stop_susy' : 'stop_10fb.csv',
@@ -134,7 +136,28 @@ process_csv = {
                  'multijets_25' : 'njets_10fb_25.csv',
                  'multijets_26' : 'njets_10fb_26.csv',
                  'multijets_27' : 'njets_10fb_27.csv',
-                 'multijets_28' : 'njets_10fb_28.csv'
+                 'multijets_28' : 'njets_10fb_28.csv',
+
+                 ########### v2 of DarkMachines dataset ###############
+                 ## This dataset is splitted already in the channels considered in DarkMachines paper: https://arxiv.org/abs/2105.14027
+                 ## Download dataset from https://zenodo.org/record/3961917/files/training_files.tar?download=1
+                 
+                 ## Chan1
+                 # background
+                 'background' : 'background_chan1_7.79.csv',
+
+                 # Signals
+                 'glgl1400_neutralino1100' : 'glgl1400_neutralino1100_chan1.csv'
+                 'glgl1600_neutralino800' : 'glgl1600_neutralino800_chan1.csv'
+                 'monojet_Zp2000.0_DM_50.0' : 'monojet_Zp2000.0_DM_50.0_chan1.csv',
+                 'monotop_200_A' : 'monotop_200_A_chan1.csv',
+                 'sqsq1_sq1400_neut800' : 'sqsq1_sq1400_neut800_chan1.csv',
+                 'sqsq_sq1800_neut800' : 'sqsq_sq1800_neut800_chan1.csv',
+                 'stlp_st1000' : 'stlp_st1000_chan1.csv',
+                 'stop2b1000_neutralino300' : 'stop2b1000_neutralino300_chan1.csv'
+
+
+
 
 }
 
@@ -247,23 +270,32 @@ def load_numpy(var, OUTPUT_FILE, is_signal):
         # Iterate over objects in event
         for pos in range(length): 
             # First 18 positions are for object multiplicities
-            if pos < max_obj_per_event: 
-                # Count jets (not being b-jets)
-                if pos==0: X_arr[n][pos] = np.sum([1 for i, x in enumerate(var[n]['isJet']) if x==1 and var[n]['isBJet'][i]==0])
-                # Count b-jets
-                elif pos==1: X_arr[n][pos] = np.count_nonzero(var[n]['isBJet'])
-                # Count leptons
-                elif pos==2: X_arr[n][pos] = np.count_nonzero(var[n]['isLepton'])
-                # Count photons
-                elif pos==4: X_arr[n][pos] = np.count_nonzero(var[n]['isPhoton'])
+            if pos < num_objs: 
+                # Give a label to each object
+                if var[n]['isJet'][pos]==1: X_arr[n][pos] = 1
+                elif var[n]['isBJet'][pos]==1: X_arr[n][pos] = 2
+                elif var[n]['isLepton'][pos]==1: X_arr[n][pos] = 3
+                elif var[n]['isPhoton'][pos]==1: X_arr[n][pos] = 4
+                elif var[n]['isMET'][pos]==1:
+                    METpos = pos 
+                    X_arr[n][18] = var[n]['obj_Energy'][METpos]
+                    X_arr[n][19] = var[n]['obj_phi'][METpos]
+                ## Count jets (not being b-jets)
+                #if pos==0: X_arr[n][pos] = np.sum([1 for i, x in enumerate(var[n]['isJet']) if x==1 and var[n]['isBJet'][i]==0])
+                ## Count b-jets
+                #elif pos==1: X_arr[n][pos] = np.count_nonzero(var[n]['isBJet'])
+                ## Count leptons
+                #elif pos==2: X_arr[n][pos] = np.count_nonzero(var[n]['isLepton'])
+                ## Count photons
+                #elif pos==4: X_arr[n][pos] = np.count_nonzero(var[n]['isPhoton'])
             
-            # Next 2 positions are for MET
-            elif pos >= max_obj_per_event and pos < (max_obj_per_event+2):
-                # Get MET position
-                METpos = [i for i, x in enumerate(var[n]['isMET']) if x==1][0]
-                # MET is not labeled as an object. MET info stored in positions 18-19.
-                if pos==max_obj_per_event: X_arr[n][pos] = var[n]['obj_Energy'][METpos]
-                elif pos==(max_obj_per_event+1): X_arr[n][pos] = var[n]['obj_phi'][METpos]
+            ## Next 2 positions are for MET
+            #elif pos >= max_obj_per_event and pos < (max_obj_per_event+2):
+            #    # Get MET position
+            #    METpos = [i for i, x in enumerate(var[n]['isMET']) if x==1][0]
+            #    # MET is not labeled as an object. MET info stored in positions 18-19.
+            #    if pos==max_obj_per_event: X_arr[n][pos] = var[n]['obj_Energy'][METpos]
+            #    elif pos==(max_obj_per_event+1): X_arr[n][pos] = var[n]['obj_phi'][METpos]
 
             # Next positions are for four-momentum of objects
             if pos >= (max_obj_per_event+2) and pos < (max_obj_per_event+2+4*num_objs):
