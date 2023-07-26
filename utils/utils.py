@@ -147,8 +147,8 @@ process_csv = {
                  'background' : 'background_chan1_7.79.csv',
 
                  # Signals
-                 'glgl1400_neutralino1100' : 'glgl1400_neutralino1100_chan1.csv'
-                 'glgl1600_neutralino800' : 'glgl1600_neutralino800_chan1.csv'
+                 'glgl1400_neutralino1100' : 'glgl1400_neutralino1100_chan1.csv',
+                 'glgl1600_neutralino800' : 'glgl1600_neutralino800_chan1.csv',
                  'monojet_Zp2000.0_DM_50.0' : 'monojet_Zp2000.0_DM_50.0_chan1.csv',
                  'monotop_200_A' : 'monotop_200_A_chan1.csv',
                  'sqsq1_sq1400_neut800' : 'sqsq1_sq1400_neut800_chan1.csv',

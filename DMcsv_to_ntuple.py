@@ -47,7 +47,7 @@ def main():
 
     # Defining writing paths and tree
     if TOTAL_SPLIT == 0: 
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/fullStats/' % version
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/chan1/' % version
         OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
     else:
         OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/parallel_splits/' % version
@@ -106,7 +106,7 @@ def main():
             if (time.time()-start) > t:
                 print("Reading during more than %s minutes..." % (t/60))
                 t+=300
-            if i%100000==0: print('Event ' +str(n_event))
+            if i%10000==0: print('Event ' +str(n_event))
     
             # Get event info
             debugPrint(debug, "event: "+event)
@@ -187,6 +187,8 @@ def main():
             var['isJet'] = isJet(objs)
             var['isBJet'] = isBJet(objs)
             var['isLepton'] = isLepton(objs)
+            var['isElectron'] = isElectron(objs)
+            var['isMuon'] = isMuon(objs)
             var['isMET'] = isMET(objs)
             var['isPhoton'] = isPhoton(objs)
             # Define label variables

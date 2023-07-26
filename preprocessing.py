@@ -131,7 +131,7 @@ def main():
         #    if l[-1].isdigit(): continue
         #    var_light[i]['label_%s' % l] = labels(process, l)
         ## Labeling signal and bkg
-        if ('susy' in process) or ('gluino' in process):
+        if ('susy' in process) or ('gluino' in process) or ('glgl' in process) or ('mono' in process) or ('sqsq' in process) or ('stlp' in process) or ('neutralino' in process):
             var_light[i]['label_background'] = int(0)
             var_light[i]['label_signal'] = int(1)
         else:
