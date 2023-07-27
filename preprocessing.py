@@ -93,7 +93,7 @@ def main():
         if n%100000==0: print('Event ' +str(n))
 
         tree.GetEntry(n)
-        if not passSelection(variables): continue
+        #if not passSelection(variables): continue
 
         var[i]={}
         for v in sorted(list_branches):
@@ -218,7 +218,7 @@ def main():
     if options.arrays:
 
         # Create folders for numpy arrays
-        OUTPUT_PATH_arrays = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/v1/channel1/%s/' % version
+        OUTPUT_PATH_arrays = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/%s/chan1/%s/' % (version[:2], version)
         print('Output path for arrays: ',OUTPUT_PATH_arrays)
         folders = ['','fullStats','train','val','test']
         for folder in folders:
@@ -228,7 +228,7 @@ def main():
     
         # Create numpy arrays 
         ## For signal
-        if ('susy' in process) or ('gluino' in process):
+        if ('susy' in process) or ('gluino' in process) or ('glgl' in process) or ('mono' in process) or ('sqsq' in process) or ('stlp' in process) or ('neutralino' in process):
             # Full stats
             load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
             # Only test for signal
