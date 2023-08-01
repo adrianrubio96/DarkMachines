@@ -272,16 +272,17 @@ def load_numpy(var, OUTPUT_FILE, is_signal):
             # First 18 positions are for object multiplicities
             if pos < num_objs: 
                 # Give a label to each object
-                if var[n]['isBJet'][pos]==1: X_arr[n][pos] = 2
-                elif var[n]['isJet'][pos]==1: X_arr[n][pos] = 1
-                #elif var[n]['isLepton'][pos]==1: X_arr[n][pos] = 3
-                elif var[n]['isElectron'][pos]==1 and var[n]['obj_charge'][pos]==1: X_arr[n][pos] = 3
-                elif var[n]['isElectron'][pos]==1 and var[n]['obj_charge'][pos]==-1: X_arr[n][pos] = 4
-                elif var[n]['isMuon'][pos]==1 and var[n]['obj_charge'][pos]==1: X_arr[n][pos] = 5
-                elif var[n]['isMuon'][pos]==1 and var[n]['obj_charge'][pos]==-1: X_arr[n][pos] = 6
-                elif var[n]['isPhoton'][pos]==1: X_arr[n][pos] = 7
-                elif var[n]['isMET'][pos]==1:
-                    METpos = pos 
+                if var[n]['isBJet'][pos_]==1: X_arr[n][pos_] = 2
+                elif var[n]['isJet'][pos_]==1: X_arr[n][pos_] = 1
+                #elif var[n]['isLepton'][pos_]==1: X_arr[n][pos_] = 3
+                elif var[n]['isElectron'][pos_]==1 and var[n]['obj_charge'][pos_]==1: X_arr[n][pos_] = 3
+                elif var[n]['isElectron'][pos_]==1 and var[n]['obj_charge'][pos_]==-1: X_arr[n][pos_] = 4
+                elif var[n]['isMuon'][pos_]==1 and var[n]['obj_charge'][pos_]==1: X_arr[n][pos_] = 5
+                elif var[n]['isMuon'][pos_]==1 and var[n]['obj_charge'][pos_]==-1: X_arr[n][pos_] = 6
+                elif var[n]['isPhoton'][pos_]==1: X_arr[n][pos_] = 7
+                elif var[n]['isMET'][pos_]==1:
+                    #print("object in pos %s is MET" % pos_)
+                    METpos = pos_ 
                     X_arr[n][18] = var[n]['obj_Energy'][METpos]
                     X_arr[n][19] = var[n]['obj_phi'][METpos]
                 ## Count jets (not being b-jets)

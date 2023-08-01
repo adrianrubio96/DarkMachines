@@ -223,7 +223,7 @@ def main():
                             variables[v] = ROOT.std.vector(float,ROOT.Detail.VecOps.RAdoptAllocator(float))()
                             tree.Branch(v,variables[v])
                     else:
-                        if type(var[v]) is  int :
+                        if type(var[v]) is int :
                             variables[v] = array('i',[0])
                             tree.Branch(v,variables[v],str(v+"/I"))
                         if type(var[v]) is float :
