@@ -56,7 +56,6 @@ def main():
     t = 0
 
     # Reading csv
-    debug = False
     with open(INPUT_PATH+INPUT_CSV, 'r') as f:
         #event = events[n_event]
         #event = linecache.getline(INPUT_PATH+INPUT_CSV,n_event+1) 
@@ -69,21 +68,13 @@ def main():
             if i%10000==0: print('Event ' +str(n_event))
     
             # Get event info
-            debugPrint(debug, "event: "+event)
             eventID = event.split(';')[0]
-            debugPrint(debug, "eventID: "+eventID)
             processID = event.split(';')[1]
-            debugPrint(debug, "processID: "+processID)
             w = event.split(';')[2]
-            debugPrint(debug, "w: "+w)
             met = ROOT.Math.PtEtaPhiEVector(float(event.split(';')[3])/1000.,0.,float(event.split(';')[4]),float(event.split(';')[3])/1000.)
-            debugPrint(debug, "met")
-            debugPrint(debug, met)
     
             # Get objects info
             objects = event.split(';')[5:]
-            debugPrint(debug, "objects")
-            debugPrint(debug, objects)
             objs={
                     'j' : [],
                     'b' : [], 
@@ -99,37 +90,26 @@ def main():
             
             Nobjs = 1
             
-            if debug: print('Point 0')
             for obj in objects:
                 # Read object name
-                debugPrint(debug, "obj: "+obj)
                 otype = obj.split(',')[0].replace('+','p').replace('-','m')
                 # Read object kinematics
                 kins = obj.split(',')[1:]
-                debugPrint(debug, 'kins: ')
-                debugPrint(debug, kins)
                 if len(kins)==0: continue
                 # Define TLorentzVector
-                debugPrint(debug, "lvec: ")
                 lvec = ROOT.Math.PtEtaPhiEVector(float(kins[1])/1000.,float(kins[2]),float(kins[3]),float(kins[0])/1000.)
-                debugPrint(debug, lvec)
                 # Save kinematics
-                debugPrint(debug, "objs[i][otype]: ")
                 try:
                     objs[otype].append(lvec)
                 except:
                     objs[otype]=[]
                     objs[otype].append(lvec)
-                debugPrint(debug, objs[otype])
                 
                 Nobjs += 1
     
                 # Sort objects by Pt
-                debugPrint(debug, "sorting objs[otype]: ")
-                objs[otype] = sortByPt(objs[otype],debug)
-                debugPrint(debug, objs[otype])
+                objs[otype] = sortByPt(objs[otype])
                 
-            if debug: print('Point 1')
             # Define variables
             #N_objs = Nobjs
             var={}
@@ -159,7 +139,6 @@ def main():
             # Insert useful info
             var['MCweight'] = float(w)
             # Insert TLorentzVector variables
-            if debug: print('Point 2')
             for otype in sorted(objs):
                 otype = otype.replace('+','p').replace('-','m')
                 var['tlv_%s' % otype] = ROOT.std.vector(ROOT.Math.PtEtaPhiEVector)()

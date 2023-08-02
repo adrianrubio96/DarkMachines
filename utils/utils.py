@@ -157,29 +157,21 @@ process_csv = {
                  'stlp_st1000' : 'stlp_st1000_chan1.csv',
                  'stop2b1000_neutralino300' : 'stop2b1000_neutralino300_chan1.csv'
 
-
-
-
 }
 
-def debugPrint(debug,message):
-    if debug: print(message)
-
-def sortByPt(list_objs,debug):
+def sortByPt(list_objs):
     list_sorted = list_objs
     isSorted = False
     if len(list_objs)<=1: isSorted=True
     while not isSorted:
         list_aux = list_sorted
         for i in range(0,len(list_objs)-1):
-            list_sorted = sortTwoByPt(list_sorted,i,debug)
+            list_sorted = sortTwoByPt(list_sorted,i)
         if list_aux==list_sorted: isSorted=True
     return list_sorted
 
-def sortTwoByPt(list_objs, i,debug):
+def sortTwoByPt(list_objs, i):
     list_out = []
-    debugPrint(debug,'list_objs')
-    debugPrint(debug,str(list_objs[i].Pt()) + " " + str(list_objs[i+1].Pt()))
     if list_objs[i].Pt()>=list_objs[i+1].Pt():
         list_out = list_objs
     else: 
@@ -187,8 +179,6 @@ def sortTwoByPt(list_objs, i,debug):
             if j==i:list_out.append(list_objs[j+1])
             elif j==i+1: list_out.append(list_objs[j-1])
             else: list_out.append(list_objs[j])
-    debugPrint(debug,'list_out')
-    debugPrint(debug,str(list_out[i].Pt()) + " " + str(list_out[i+1].Pt()))
     return list_out
 
 def load(var, OUTPUT_FILE, treename):
