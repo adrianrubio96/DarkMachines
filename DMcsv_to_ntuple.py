@@ -23,20 +23,33 @@ def main():
     parser.add_option("-p","--process", dest="process", help="Comma-separated list of the processes to run")
     parser.add_option("-v","--version", dest="version", default="", help="Version of the ntuples")
     parser.add_option("-i","--input", dest="input", default="", help="Input path")
+    parser.add_option("-c","--chan", dest="channel", default="", help="Channel to run")
     (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
 
     # Reading parser info: version
-    if options.version != "":
-        version = options.version
-    if options.input != "":
-        INPUT_PATH = options.input
+    if options.version != "": version = options.version
+    else: 
+        print("[WARNING] Please provide a version")
+        sys.exit()
+    if options.input != "": INPUT_PATH = options.input
+    else: 
+        print("[WARNING] Please provide an input path")
+        sys.exit()
+    if options.channel != "": channel = options.channel
+    else: 
+        print("[WARNING] Please provide a channel")
+        sys.exit()
+    if options.process != "": process = options.process
+    else:
+        print("[WARNING] Please provide a process")
+        sys.exit()
     
     # Reading parser info: splitting large csv inputs
     INPUT_CSV = process_csv[process]
     print("[INFO] Reading the csv input %s" % INPUT_CSV)
 
     # Defining writing paths and tree
-    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/chan1/' % version
+    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/%s/' % (version,channel)
     OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
     treename = 'mytree'
     
