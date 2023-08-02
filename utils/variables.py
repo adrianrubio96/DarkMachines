@@ -98,7 +98,15 @@ def isElectron(objs):
     l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
     for otype in sorted(objs):
         for obj in objs[otype]:
-            if len(otype)==2 and otype.startswith('e'): l.push_back(int(1))
+            if otype == 'em': l.push_back(int(1))
+            else: l.push_back(int(0))
+    return l
+
+def isPositron(objs):
+    l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
+    for otype in sorted(objs):
+        for obj in objs[otype]:
+            if otype == 'ep': l.push_back(int(1))
             else: l.push_back(int(0))
     return l
 
@@ -106,7 +114,15 @@ def isMuon(objs):
     l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
     for otype in sorted(objs):
         for obj in objs[otype]:
-            if len(otype)==2 and otype.startswith('m'): l.push_back(int(1))
+            if otype == 'mm': l.push_back(int(1))
+            else: l.push_back(int(0))
+    return l
+
+def isAntimuon(objs):
+    l = ROOT.std.vector(int,ROOT.Detail.VecOps.RAdoptAllocator(int))() #ROOT.std.vector(float)()
+    for otype in sorted(objs):
+        for obj in objs[otype]:
+            if otype == 'mp': l.push_back(int(1))
             else: l.push_back(int(0))
     return l
 
