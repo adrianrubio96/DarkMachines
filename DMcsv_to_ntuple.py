@@ -32,26 +32,12 @@ def main():
         INPUT_PATH = options.input
     
     # Reading parser info: splitting large csv inputs
-    ## Format: -p PROCESS:TOTAL_SPLIT:SPLIT_NUMBER
-    ## Example: -p Zjets:3:2  --> Select process Zjets, which is divided in 3 pieces and the 2nd one is selected
-    process = options.process.split(":")[0]
     INPUT_CSV = process_csv[process]
-    TOTAL_SPLIT=0
-    SPLIT_NUMBER=0
-    if len(options.process.split(":")) > 1:
-        TOTAL_SPLIT=int(options.process.split(":")[1])
-        SPLIT_NUMBER=int(options.process.split(":")[2])
-        print("Reading the part %d/%d of the csv input %s " % (SPLIT_NUMBER, TOTAL_SPLIT, INPUT_CSV))
-    else: 
-        print("Reading the whole csv input %s" % INPUT_CSV)
+    print("[INFO] Reading the csv input %s" % INPUT_CSV)
 
     # Defining writing paths and tree
-    if TOTAL_SPLIT == 0: 
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/chan1/' % version
-        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
-    else:
-        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/parallel_splits/' % version
-        OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
+    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/chan1/' % version
+    OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
     treename = 'mytree'
     
     # Create TFile
@@ -59,25 +45,6 @@ def main():
     # Create TTree 
     tree = TTree(treename,'Tree for transformers')
     
-    # Read csv
-    #with open(INPUT_PATH+INPUT_CSV, 'r') as f:
-    #    # save events 
-    #    #events = f.readlines()
-
-    #    # pass the file object to DictReader() to get the DictReader object
-    #    csv_dict_reader = DictReader(f)
-    #    print(csv_dict_reader)
-    #    #rows = list(csv_dict_reader)
-    #    #total_events = len(rows)
-    #    total_events = sum(1 for row in csv_dict_reader)
-    #    print(total_events)  
-
-    #    # select events to run
-    #    if TOTAL_SPLIT != 0:
-    #        starting_event = float(SPLIT_NUMBER-1)/float(TOTAL_SPLIT)*float(total_events)
-    #        ending_event = float(SPLIT_NUMBER)/float(TOTAL_SPLIT)*float(total_events)
-    #        print("Reading from event %d to event %s " % (int(starting_event), int(ending_event)))
-
     # Organise objects reading
     i = 0
     #N_objs = { i : []}
@@ -90,13 +57,6 @@ def main():
 
     # Reading csv
     debug = False
-
-    # iterate over each line as a ordered dictionary
-    #for event in csv_dict_reader:
-    #    print(event)
-    
-    #for n_event in range(int(starting_event), int(ending_event)):
-    #while True:
     with open(INPUT_PATH+INPUT_CSV, 'r') as f:
         #event = events[n_event]
         #event = linecache.getline(INPUT_PATH+INPUT_CSV,n_event+1) 
@@ -243,29 +203,15 @@ def main():
                     variables[v][0]=var[v]
                 
             tree.Fill()
-
-            #print(variables)
-    
-            #if debug: break
             
             i+=1 
-            #if i > 10: break
+            if i > 10: break
             #break
     
     # Save Tree
     tree.Write()
     outfile.Write()
     outfile.Close()
-    
-    #if TOTAL_SPLIT == 0: 
-    #    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/fullStats/'
-    #    OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
-    #else:
-    #    OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/parallel_splits/'
-    #    OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','_%s_%s.root' % (TOTAL_SPLIT, SPLIT_NUMBER))
-    #treename = 'mytree'
-    #load(var, OUTPUT_FILE, treename)
-
 
 
 if __name__ == '__main__':
