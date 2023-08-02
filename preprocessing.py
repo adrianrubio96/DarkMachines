@@ -44,6 +44,7 @@ def main():
     parser.add_option("-o","--output", dest="output", default="", help="Output path")
     parser.add_option("-a","--arrays", action="store_true", dest="arrays", default=False, help="Save arrays as output")
     parser.add_option("-r","--root", action="store_true", dest="root", default=False, help="Save root files as output")
+    parser.add_option("-c","--chan", dest="chan", default="", help="Channel to be processed")
     (options, sys.argv[1:]) = parser.parse_args(sys.argv[1:])
     
     process = options.process
@@ -51,6 +52,8 @@ def main():
     # Reading parser info
     if options.version != "": version = options.version
     if options.input != "": INPUT_PATH = options.input
+    #if options.output != "": OUTPUT_PATH = options.output
+    if options.chan != "": channel = options.chan
 
     # Open TFile
     f = TFile.Open(INPUT_PATH+process_csv[process].replace('.csv','.root'), "READ")
@@ -159,7 +162,8 @@ def main():
         # Define output paths
         #INPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/fullStats/'
         #OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v1/channel1/%s/' % version
-        OUTPUT_PATH = INPUT_PATH.replace('fullStats','channel1/%s/' % version)
+        #OUTPUT_PATH = INPUT_PATH.replace('fullStats','%s/%s/' % (channel, version))
+        OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/%s/%s/' % (version[:2], channel, version) 
         print('Output path for ntuples: ',OUTPUT_PATH)
 
         # Create fullStats folder if it does not exist
@@ -218,7 +222,7 @@ def main():
     if options.arrays:
 
         # Create folders for numpy arrays
-        OUTPUT_PATH_arrays = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/%s/chan1/%s/' % (version[:2], version)
+        OUTPUT_PATH_arrays = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/%s/%s/%s/' % (version[:2], channel, version)
         print('Output path for arrays: ',OUTPUT_PATH_arrays)
         folders = ['','fullStats','train','val','test']
         for folder in folders:
