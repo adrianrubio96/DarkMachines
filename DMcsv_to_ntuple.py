@@ -143,7 +143,7 @@ def main():
             var['isElectron'] = isElectron(objs)
             var['isPositron'] = isPositron(objs)
             var['isMuon'] = isMuon(objs)
-            var['isAntiMuon'] = isAntimuon(objs)
+            var['isAntimuon'] = isAntimuon(objs)
             var['isMET'] = isMET(objs)
             var['isPhoton'] = isPhoton(objs)
             # Define label variables
