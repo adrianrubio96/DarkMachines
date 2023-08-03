@@ -281,10 +281,10 @@ def load_numpy(var, OUTPUT_FILE, is_signal):
             if var[n]['isBJet'][pos]==1: X_arr[n][i] = 2
             elif var[n]['isJet'][pos]==1: X_arr[n][i] = 1
             #elif var[n]['isLepton'][pos]==1: X_arr[n][i] = 3
-            elif var[n]['isElectron'][pos]==1 and var[n]['obj_charge'][pos]==1: X_arr[n][i] = 3
-            elif var[n]['isElectron'][pos]==1 and var[n]['obj_charge'][pos]==-1: X_arr[n][i] = 4
-            elif var[n]['isMuon'][pos]==1 and var[n]['obj_charge'][pos]==1: X_arr[n][i] = 5
-            elif var[n]['isMuon'][pos]==1 and var[n]['obj_charge'][pos]==-1: X_arr[n][i] = 6
+            elif var[n]['isElectron'][pos]==1: X_arr[n][i] = 3
+            elif var[n]['isPositron'][pos]==1: X_arr[n][i] = 4
+            elif var[n]['isMuon'][pos]==1: X_arr[n][i] = 5
+            elif var[n]['isAntimuon'][pos]==1: X_arr[n][i] = 6
             elif var[n]['isPhoton'][pos]==1: X_arr[n][i] = 7
             
             # Store kinematic variables
