@@ -11,6 +11,9 @@ def main():
 
     # Path to the directory where the h5 file will be saved
     OUTPUT_PATH = sys.argv[2]
+
+    # Signal to convert h5 together with background
+    SIGNAL = sys.argv[3]
     
     # Create output directory
     if not os.path.exists(OUTPUT_PATH):
@@ -25,6 +28,9 @@ def main():
         # List of input files 
         input_files = os.listdir(os.path.join(INPUT_PATH, dataset))
 
+        # Keep only background and specified signal file
+        input_files = [x for x in input_files if ('background' in x) or (SIGNAL in x)]
+
         # Loop over input files
         for input_file in input_files:
 
@@ -32,10 +38,10 @@ def main():
             input_array = np.load(os.path.join(INPUT_PATH, dataset, input_file))
 
             # Create numpy array for labels
-            if ('susy' in input_file) or ('gluino' in input_file):
+            if (SIGNAL in input_file):
                 labels_array = np.ones(np.shape(input_array)[0],)
             else:
-               labels_array = np.zeros(np.shape(input_array)[0],)
+                labels_array = np.zeros(np.shape(input_array)[0],)
 
             # Merge numpy arrays
             if arrays['X_'+dataset].size == 0: 
@@ -67,10 +73,10 @@ def main():
     print('Number of background events in test: ', np.count_nonzero(arrays['y_test'] == 0))
 
     # Convert to h5 file
-    with h5py.File(os.path.join(OUTPUT_PATH, 'DarkMachines.h5'), 'w') as hf:
+    with h5py.File(os.path.join(OUTPUT_PATH, 'DarkMachines_%s.h5' % SIGNAL), 'w') as hf:
         for k, v in arrays.items():
             hf.create_dataset(k, data=v)
 
 if __name__ == "__main__":
-    print("Example: python make_h5.py /data/ML/DarkMachines/arrays /data/ML/DarkMachines/h5")
+    print("Example: python make_h5.py /data/to/DarkMachines/arrays /data/to/DarkMachines/h5")
     main()
