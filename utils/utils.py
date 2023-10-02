@@ -155,7 +155,52 @@ process_csv = {
                  'sqsq1_sq1400_neut800_chan1' : 'sqsq1_sq1400_neut800_chan1.csv',
                  'sqsq_sq1800_neut800_chan1' : 'sqsq_sq1800_neut800_chan1.csv',
                  'stlp_st1000_chan1' : 'stlp_st1000_chan1.csv',
-                 'stop2b1000_neutralino300_chan1' : 'stop2b1000_neutralino300_chan1.csv'
+                 'stop2b1000_neutralino300_chan1' : 'stop2b1000_neutralino300_chan1.csv',
+
+                ## Chan2a
+                # background
+                'background_chan2a_309.6' : 'background_chan2a_309.6.csv',
+
+                # Signals
+                'chaneut_cha200_neut50_chan2a' : 'chaneut_cha200_neut50_chan2a.csv',
+                'chaneut_cha250_neut150_chan2a' : 'chaneut_cha250_neut150_chan2a.csv',
+                'chaneut_cha300_neut100_chan2a' : 'chaneut_cha300_neut100_chan2a.csv',
+                'chaneut_cha400_neut200_chan2a' : 'chaneut_cha400_neut200_chan2a.csv',
+                'gluino_1000.0_neutralino_1.0_chan2a' : 'gluino_1000.0_neutralino_1.0_chan2a.csv',
+                'pp23mt_50_chan2a' : 'pp23mt_50_chan2a.csv',
+                'pp24mt_50_chan2a' : 'pp24mt_50_chan2a.csv',
+
+                ## Chan2b
+                # background
+                'background_chan2b_7.8' : 'background_chan2b_7.8.csv',
+
+                # Signals
+                'chacha_cha300_neut140_chan2b' : 'chacha_cha300_neut140_chan2b.csv',
+                'chacha_cha400_neut60_chan2b' : 'chacha_cha400_neut60_chan2b.csv',
+                'chacha_cha600_neut200_chan2b' : 'chacha_cha600_neut200_chan2b.csv',
+                'chaneut_cha200_neut50_chan2b' : 'chaneut_cha200_neut50_chan2b.csv',
+                'chaneut_cha250_neut150_chan2b' : 'chaneut_cha250_neut150_chan2b.csv',
+                'gluino_1000.0_neutralino_1.0_chan2b' : 'gluino_1000.0_neutralino_1.0_chan2b.csv',
+                'pp23mt_50_chan2b' : 'pp23mt_50_chan2b.csv',
+                'pp24mt_50_chan2b' : 'pp24mt_50_chan2b.csv',
+                'stlp_st1000_chan2b' : 'stlp_st1000_chan2b.csv',
+
+                ## Chan3
+                # background
+                'background_chan3_8.02' : 'background_chan3_8.02.csv',
+
+                # Signals
+                'glgl1400_neutralino1100_chan3' : 'glgl1400_neutralino1100_chan3.csv',
+                'glgl1600_neutralino800_chan3' : 'glgl1600_neutralino800_chan3.csv',
+                'gluino_1000.0_neutralino_1.0_chan3' : 'gluino_1000.0_neutralino_1.0_chan3.csv',
+                'monojet_Zp2000.0_DM_50.0_chan3' : 'monojet_Zp2000.0_DM_50.0_chan3.csv',
+                'monotop_200_A_chan3' : 'monotop_200_A_chan3.csv',
+                'monoV_Zp2000.0_DM_1.0_chan3' : 'monoV_Zp2000.0_DM_1.0_chan3.csv',
+                'sqsq1_sq1400_neut800_chan3' : 'sqsq1_sq1400_neut800_chan3.csv',
+                'sqsq_sq1800_neut800_chan3' : 'sqsq_sq1800_neut800_chan3.csv',
+                'stlp_st1000_chan3' : 'stlp_st1000_chan3.csv',
+                'stop2b1000_neutralino300_chan3' : 'stop2b1000_neutralino300_chan3.csv',
+
 
 }
 

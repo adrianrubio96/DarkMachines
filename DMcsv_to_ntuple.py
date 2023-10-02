@@ -52,6 +52,10 @@ def main():
     OUTPUT_PATH = '/lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/%s/%s/' % (version,channel)
     OUTPUT_FILE = OUTPUT_PATH+INPUT_CSV.replace('.csv','.root')
     treename = 'mytree'
+
+    # Create output path
+    if not os.path.exists(OUTPUT_PATH):
+        os.makedirs(OUTPUT_PATH)
     
     # Create TFile
     outfile = TFile.Open(OUTPUT_FILE, 'RECREATE')
