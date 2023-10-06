@@ -17,29 +17,35 @@ This only runs the basic ATLAS and ROOT (6.18.04) setting up.
 
 Run the command:
 ```
-python DMcsv_to_ntuple.py -p ttbar -i /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/linked_DarkMachines_input/ -v vX
+python DMcsv_to_ntuple.py -c chan2b -p background_chan2b_7.8 -i /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_input/training_files/chan2a/ -v v2
 ```
-where vX denotes the version of the ntuples (v0, v1, ...).
+where vX denotes the version of the ntuples (v0, v1, ...). The -c sets the channel we want to run. The channel names considered from DarkMachines dataset are `chan1`, `chan2a`, `chan2b`, `chan3`.
 
-Since some of the backgrounds are very heavy, the longest csv files are already splitted (njets_10fb_01.csv, njets_10fb_02.csv, etc.) in the input directory. This is necessary for `multijets`, `gamjets`, `Zjets` and `Wjets`. On the contrary, the signal samples have already low statistics, so it would be convenient to merge them already with the `hadd` command.
+<Since some of the backgrounds are very heavy, the longest csv files are already splitted (njets_10fb_01.csv, njets_10fb_02.csv, etc.) in the input directory. This is necessary for `multijets`, `gamjets`, `Zjets` and `Wjets`. On the contrary, the signal samples have already low statistics, so it would be convenient to merge them already with the `hadd` command.>
 
-## Light ntuples
-
-In this step, the particular channel is specified by applying the preselection:
+## Light ntuples or arrays
+In this step, the ntuples are modified into either lighter ntuples or numpy arrays, being straightforward to add more cuts if needed. To produce numpy arrays:
 ```
-python preprocessing.py -p ttbar -v vXY -i /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/vX/fullStats/
+python preprocessing.py --arrays --chan chan2b -p -v v21 -i /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/v2/chan2b/
 ```
-where now the version format requires two digits (X is the same as in the previous step and Y denotes the light version). The input path now is the output path of the following step. 
+where now the version format requires two digits (vXY, where X is the same as in the previous step and Y denotes the light version).  
 
-Two different outputs are created with this script. On one side, the full statistics passing the preselection for each of the files is saved in the subdirectory `channel1/vXY/fullStats/`. On the other side, the same files are saved by splitting them in train/val/test sets (80/10/10).
+Two different outputs are created with this script. On one side, the full statistics passing the preselection for each of the files is saved in the subdirectory `chan1/vXY/fullStats/`. On the other side, the same files are saved by splitting them in train/val/test sets (80/10/10).
 
-### Merging into signal vs background
+In order to produce the light ntuples instead of the numpy arrays you can change the flag "--arrays" by "--root".
 
-Now that all files are light, we proceed to the merging of the files corresponding to the same process. Subsequently, all the files corresponding to background and signal will be merged into two files named `background_10fb.root` and `signal_10fb.root`. These final steps are done with the following command:
+## Make h5
+If you have produced the numpy arrays in the previous step, you can create the h5 files by running:
+```
+python make_h5.py /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/arrays/v2/chan2b/v21/ /OUTPUT/DIR/ chacha_cha300_neut140_chan2b
+```
+The h5 file produced in this examples would contain the background and the signal specified in the third argument passed. If we want the h5 file to contain all the signals we can set `all` as third argument.
+
+<Now that all files are light, we proceed to the merging of the files corresponding to the same process. Subsequently, all the files corresponding to background and signal will be merged into two files named `background_10fb.root` and `signal_10fb.root`. These final steps are done with the following command:
 ```
 python signal_vs_background.py -i /lustre/ific.uv.es/grid/atlas/t3/adruji/DarkMachines/DarkMachines_ntuples/vX/fullStats/vXY/channel1/
 ```
+This will create an output subdirectoy `channel1/vXY/signal_vs_bkg/` with the `train`, `val` and `test` sets, which contain the final ntuples to be read for the training.>
 
-This will create an output subdirectoy `channel1/vXY/signal_vs_bkg/` with the `train`, `val` and `test` sets, which contain the final ntuples to be read for the training.
-
-Plots for the different input variables are obtained for each of the sets using the `plot_variables.py` script of the "[ROOTplotting repository](https://github.com/adrianrubio96/ROOTplotting/tree/DarkMachines)" (in the DarkMachines branch). 
+## Plotting variables
+If you have produced the light ntuples previously, you can produce the plots for the different input variables using the `plot_variables.py` script of the "[ROOTplotting repository](https://github.com/adrianrubio96/ROOTplotting/tree/DarkMachines)" (in the DarkMachines branch). 
