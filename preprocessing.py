@@ -134,12 +134,13 @@ def main():
         #    if l[-1].isdigit(): continue
         #    var_light[i]['label_%s' % l] = labels(process, l)
         ## Labeling signal and bkg
-        if ('susy' in process) or ('gluino' in process) or ('glgl' in process) or ('mono' in process) or ('sqsq' in process) or ('stlp' in process) or ('neutralino' in process):
-            var_light[i]['label_background'] = int(0)
-            var_light[i]['label_signal'] = int(1)
-        else:
+        #if ('susy' in process) or ('gluino' in process) or ('glgl' in process) or ('mono' in process) or ('sqsq' in process) or ('stlp' in process) or ('neutralino' in process):
+        if 'background' in process:
             var_light[i]['label_background'] = int(1)
             var_light[i]['label_signal'] = int(0)
+        else:
+            var_light[i]['label_background'] = int(0)
+            var_light[i]['label_signal'] = int(1)
 
     # Create acceptance folder if it does not exist
     acceptance_path = '/lhome/ific/a/adruji/DarkMachines/DataPreparation/acceptance/csv/'
@@ -231,14 +232,11 @@ def main():
                 os.makedirs(OUTPUT_PATH_arrays+folder+'/')
     
         # Create numpy arrays 
-        ## For signal
-        if ('susy' in process) or ('gluino' in process) or ('glgl' in process) or ('mono' in process) or ('sqsq' in process) or ('stlp' in process) or ('neutralino' in process):
-            # Full stats
-            load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
-            # Only test for signal
-            load_numpy(var_light,OUTPUT_PATH_arrays+'test/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
         ## For background, create train, val, test arrays
-        else:
+        print(process)
+        if 'background' in process:
+            print ('processing as background')
+
             # Full stats
             load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
             
@@ -250,6 +248,13 @@ def main():
             load_numpy(var_train,OUTPUT_PATH_arrays+'train/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
             load_numpy(var_val,OUTPUT_PATH_arrays+'val/'+process_csv[process].replace('.csv','.npy'), is_signal=False)
             load_numpy(var_test,OUTPUT_PATH_arrays+'test/'+process_csv[process].replace('.csv','.npy'),  is_signal=False)
+        ## For signal
+        else:
+            print ('processing as signal')
+            # Full stats
+            load_numpy(var_light,OUTPUT_PATH_arrays+'fullStats/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
+            # Only test for signal
+            load_numpy(var_light,OUTPUT_PATH_arrays+'test/'+process_csv[process].replace('.csv','.npy'), is_signal=True)
     
 
 if __name__ == '__main__':
